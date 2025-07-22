@@ -1,0 +1,57 @@
+{
+    "name": "kauffinger/agentic-chat-bubble",
+    "autoload": {
+        "psr-4": {
+            "Kauffinger\\AgenticChatBubble\\": "src"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Kauffinger\\AgenticChatBubble\\Tests\\": "tests"
+        }
+    },
+    "require": {
+        "statamic/cms": "^5.0",
+        "laravel/pint": "v1.24.0",
+        "prism-php/prism": ">=0.81 ^0",
+        "livewire/livewire": "^v3.6.4"
+    },
+    "require-dev": {
+        "orchestra/testbench": "^9.0",
+        "larastan/larastan": "^3.0"
+    },
+    "config": {
+        "allow-plugins": {
+            "pixelfear/composer-dist-plugin": true
+        }
+    },
+    "extra": {
+        "statamic": {
+            "name": "Agentic Chat Bubble",
+            "description": "Agentic Chat Bubble addon"
+        },
+        "laravel": {
+            "providers": [
+                "Kauffinger\\AgenticChatBubble\\ServiceProvider"
+            ]
+        }
+    },
+    "scripts": {
+        "format": [
+            "pint --parallel",
+            "npm run format"
+        ],
+        "format:check": [
+            "pint --test --parallel",
+            "npm run format:check"
+        ],
+        "test": [
+            "vendor/bin/pest"
+        ],
+        "types": [
+            "vendor/bin/phpstan"
+        ]
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true
+}

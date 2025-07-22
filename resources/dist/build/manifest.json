@@ -1,0 +1,13 @@
+{
+  "resources/css/addon.css": {
+    "file": "assets/addon-DRYgmES2.css",
+    "src": "resources/css/addon.css",
+    "isEntry": true
+  },
+  "resources/js/addon.js": {
+    "file": "assets/addon-NewnD3hu.js",
+    "name": "addon",
+    "src": "resources/js/addon.js",
+    "isEntry": true
+  }
+}
