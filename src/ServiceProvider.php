@@ -3,6 +3,7 @@
 namespace Kauffinger\AgenticChatBubble;
 
 use Kauffinger\AgenticChatBubble\Livewire\ChatBubbleComponent;
+use Kauffinger\AgenticChatBubble\Services\ToolRegistry;
 use Livewire\Livewire;
 use Statamic\Providers\AddonServiceProvider;
 
@@ -39,19 +40,15 @@ class ServiceProvider extends AddonServiceProvider
         );
 
         // Register singleton for tool management
-        $this->app->singleton('agentic-chat-bubble.tools', function ($app) {
-            return collect();
-        });
+        $this->app->singleton(ToolRegistry::class);
     }
 
     /**
      * Register a tool to be used by the chat bubble
-     *
-     * @param  string|callable|object  $tool
      */
-    public static function registerTool($tool): void
+    public static function registerTool(string|callable|object $tool): void
     {
-        app('agentic-chat-bubble.tools')->push($tool);
+        app(ToolRegistry::class)->register($tool);
     }
 
     /**
@@ -59,8 +56,6 @@ class ServiceProvider extends AddonServiceProvider
      */
     public static function registerTools(array $tools): void
     {
-        foreach ($tools as $tool) {
-            static::registerTool($tool);
-        }
+        app(ToolRegistry::class)->registerMany($tools);
     }
 }

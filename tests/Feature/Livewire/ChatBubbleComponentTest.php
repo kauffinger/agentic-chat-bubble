@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\RateLimiter;
 use Kauffinger\AgenticChatBubble\Actions\UpdateStreamDataFromPrismChunk;
 use Kauffinger\AgenticChatBubble\Dtos\StreamData;
 use Kauffinger\AgenticChatBubble\Livewire\ChatBubbleComponent;
+use Kauffinger\AgenticChatBubble\Services\ToolRegistry;
 use Prism\Prism\Enums\ChunkType;
 use Prism\Prism\Enums\FinishReason;
 use Prism\Prism\Enums\Provider;
@@ -32,23 +33,9 @@ beforeEach(function () {
     Config::set('agentic-chat-bubble.rate_limit.decay_minutes', 1);
     Config::set('agentic-chat-bubble.tools', []);
 
-    // Initialize the dynamic tools container
-    app()->singleton('agentic-chat-bubble.tools', function () {
-        return new class
-        {
-            private array $tools = [];
-
-            public function register(string $key, $tool): void
-            {
-                $this->tools[$key] = $tool;
-            }
-
-            public function all(): array
-            {
-                return $this->tools;
-            }
-        };
-    });
+    // Initialize the ToolRegistry and clear it before each test
+    app()->singleton(ToolRegistry::class);
+    app(ToolRegistry::class)->clear();
 });
 
 // No need for Mockery::close() when using Pest Laravel's mock() helper
@@ -416,8 +403,8 @@ describe('Tool Loading', function () {
             ->for('Dynamic tool 2')
             ->using(fn () => 'result2');
 
-        app('agentic-chat-bubble.tools')->register('tool1', $mockTool1);
-        app('agentic-chat-bubble.tools')->register('tool2', $mockTool2);
+        app(ToolRegistry::class)->register($mockTool1);
+        app(ToolRegistry::class)->register($mockTool2);
 
         $component = livewire(ChatBubbleComponent::class)->instance();
         $reflection = new ReflectionMethod($component, 'getTools');
@@ -439,7 +426,7 @@ describe('Tool Loading', function () {
             ->using(fn () => 'dynamic result');
 
         Config::set('agentic-chat-bubble.tools', [$configTool]);
-        app('agentic-chat-bubble.tools')->register('dynamic', $dynamicTool);
+        app(ToolRegistry::class)->register($dynamicTool);
 
         $component = livewire(ChatBubbleComponent::class)->instance();
         $reflection = new ReflectionMethod($component, 'getTools');

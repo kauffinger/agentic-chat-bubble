@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\View\View;
 use Kauffinger\AgenticChatBubble\Actions\UpdateStreamDataFromPrismChunk;
 use Kauffinger\AgenticChatBubble\Dtos\StreamData;
+use Kauffinger\AgenticChatBubble\Services\ToolRegistry;
 use Livewire\Attributes\Session;
 use Livewire\Component;
 use Prism\Prism\Enums\ChunkType;
@@ -174,29 +175,19 @@ class ChatBubbleComponent extends Component
 
     protected function getTools(): array
     {
-        $tools = [];
-
         // Get tools from config
         $configuredTools = Config::get('agentic-chat-bubble.tools', []);
 
-        // Merge with dynamically registered tools
-        $dynamicTools = app('agentic-chat-bubble.tools')->all();
-        $allTools = array_merge($configuredTools, $dynamicTools);
+        // Get the app-resolved ToolRegistry
+        $toolRegistry = app(ToolRegistry::class);
 
-        foreach ($allTools as $tool) {
-            if (is_string($tool)) {
-                // Class string - resolve from container
-                $tools[] = app($tool);
-            } elseif (is_callable($tool)) {
-                // Closure or callable - invoke it
-                $tools[] = $tool();
-            } elseif (is_object($tool)) {
-                // Already instantiated
-                $tools[] = $tool;
-            }
-        }
+        // Resolve config tools fresh each time (don't persist them)
+        $resolvedConfigTools = $toolRegistry->resolveTools($configuredTools);
 
-        return $tools;
+        // Get persisted dynamic tools
+        $dynamicTools = $toolRegistry->all();
+
+        return array_merge($resolvedConfigTools, $dynamicTools);
     }
 
     protected function getRateLimitKey(): string
