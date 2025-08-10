@@ -26,10 +26,10 @@ class ChatBubbleComponent extends Component
     public array $messages = [];
 
     #[Session]
-    public bool $gdprConsent = false;
+    public bool $hasGdprConsent = false;
 
     #[Session]
-    public bool $gdprDeclined = false;
+    public bool $hasDeclinedGdpr = false;
 
     public function mount(): void {}
 
@@ -45,7 +45,7 @@ class ChatBubbleComponent extends Component
         $this->validate();
 
         // Check GDPR consent if enabled
-        if (Config::get('agentic-chat-bubble.gdpr.enabled', false) && ! $this->gdprConsent) {
+        if (Config::get('agentic-chat-bubble.gdpr.enabled', false) && ! $this->hasGdprConsent) {
             // Client-side will handle showing the modal
             return;
         }
@@ -81,7 +81,7 @@ class ChatBubbleComponent extends Component
         }
 
         // Check GDPR consent if enabled
-        if (Config::get('agentic-chat-bubble.gdpr.enabled', false) && ! $this->gdprConsent) {
+        if (Config::get('agentic-chat-bubble.gdpr.enabled', false) && ! $this->hasGdprConsent) {
             return;
         }
 
@@ -175,14 +175,14 @@ class ChatBubbleComponent extends Component
 
     public function giveGdprConsent(): void
     {
-        $this->gdprConsent = true;
-        $this->gdprDeclined = false;
+        $this->hasGdprConsent = true;
+        $this->hasDeclinedGdpr = false;
     }
 
     public function declineGdprConsent(): void
     {
-        $this->gdprConsent = false;
-        $this->gdprDeclined = true;
+        $this->hasGdprConsent = false;
+        $this->hasDeclinedGdpr = true;
     }
 
     public function render(): View

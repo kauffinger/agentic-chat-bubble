@@ -68,7 +68,7 @@
             {{-- Chat Content Area --}}
             <div class="py-4 pl-4" x-ref="chatContainer">
                 {{-- GDPR Consent Modal --}}
-                @if (config('agentic-chat-bubble.gdpr.enabled') && ! $gdprConsent)
+                @if (config('agentic-chat-bubble.gdpr.enabled') && ! $hasGdprConsent)
                     <div
                         x-show="showGdprConsent"
                         x-transition:enter="transition duration-200 ease-out"
@@ -106,7 +106,7 @@
                 @endif
 
                 {{-- Show declined message if user declined consent --}}
-                @if (config('agentic-chat-bubble.gdpr.enabled') && $gdprDeclined)
+                @if (config('agentic-chat-bubble.gdpr.enabled') && $hasDeclinedGdpr)
                     <div class="mt-8 p-4 text-center">
                         <p class="text-sm text-gray-600">
                             {{ config('agentic-chat-bubble.gdpr.declined_message') }}
@@ -153,7 +153,7 @@
 
             {{-- Chat Input Area --}}
             <div class="absolute right-0 bottom-0 left-0 border-t-2 border-neutral-800 bg-white p-4">
-                @if (config('agentic-chat-bubble.gdpr.enabled') && $gdprDeclined)
+                @if (config('agentic-chat-bubble.gdpr.enabled') && $hasDeclinedGdpr)
                     {{-- Show disabled state when consent is declined --}}
                     <div class="text-center">
                         <p class="mb-2 text-sm text-gray-500">Chat is disabled without consent</p>
@@ -167,9 +167,9 @@
                 @else
                     <form
                         wire:submit="sendMessage"
-                        @if (config('agentic-chat-bubble.gdpr.enabled') && ! $gdprConsent && ! $gdprDeclined)
+                        @if (config('agentic-chat-bubble.gdpr.enabled') && ! $hasGdprConsent && ! $hasDeclinedGdpr)
                             x-on:submit="
-                                if (! @json($gdprConsent)) {
+                                if (! @json($hasGdprConsent)) {
                                     showGdprConsent = true
                                     $event.preventDefault()
                                 }

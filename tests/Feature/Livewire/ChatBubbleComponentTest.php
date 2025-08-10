@@ -454,12 +454,12 @@ describe('Session Persistence', function () {
     it('persists GDPR consent in session', function () {
         // Set GDPR consent on first component
         $component1 = livewire(ChatBubbleComponent::class)
-            ->set('gdprConsent', true);
+            ->set('hasGdprConsent', true);
 
         // Create new component instance - should restore from session
         $component2 = livewire(ChatBubbleComponent::class);
 
-        expect($component2->gdprConsent)->toBe(true);
+        expect($component2->hasGdprConsent)->toBe(true);
     });
 });
 
@@ -496,7 +496,7 @@ describe('GDPR Mode', function () {
         Config::set('agentic-chat-bubble.gdpr.enabled', true);
 
         $component = livewire(ChatBubbleComponent::class)
-            ->set('gdprConsent', false)
+            ->set('hasGdprConsent', false)
             ->set('message', 'Test message')
             ->call('sendMessage')
             ->assertSet('message', 'Test message'); // Message not cleared
@@ -510,7 +510,7 @@ describe('GDPR Mode', function () {
         RateLimiter::shouldReceive('tooManyAttempts')->andReturn(false);
 
         $component = livewire(ChatBubbleComponent::class)
-            ->set('gdprConsent', true)
+            ->set('hasGdprConsent', true)
             ->set('message', 'Test message')
             ->call('sendMessage')
             ->assertSet('message', '')
@@ -522,20 +522,20 @@ describe('GDPR Mode', function () {
 
     it('sets consent when giveGdprConsent is called', function () {
         livewire(ChatBubbleComponent::class)
-            ->set('gdprConsent', false)
-            ->set('gdprDeclined', true)
+            ->set('hasGdprConsent', false)
+            ->set('hasDeclinedGdpr', true)
             ->call('giveGdprConsent')
-            ->assertSet('gdprConsent', true)
-            ->assertSet('gdprDeclined', false);
+            ->assertSet('hasGdprConsent', true)
+            ->assertSet('hasDeclinedGdpr', false);
     });
 
     it('sets declined when declineGdprConsent is called', function () {
         livewire(ChatBubbleComponent::class)
-            ->set('gdprConsent', true)
-            ->set('gdprDeclined', false)
+            ->set('hasGdprConsent', true)
+            ->set('hasDeclinedGdpr', false)
             ->call('declineGdprConsent')
-            ->assertSet('gdprConsent', false)
-            ->assertSet('gdprDeclined', true);
+            ->assertSet('hasGdprConsent', false)
+            ->assertSet('hasDeclinedGdpr', true);
     });
 
     it('blocks runChatToolLoop without consent when GDPR enabled', function () {
@@ -545,7 +545,7 @@ describe('GDPR Mode', function () {
         Prism::fake([]);
 
         $component = livewire(ChatBubbleComponent::class);
-        $component->set('gdprConsent', false);
+        $component->set('hasGdprConsent', false);
         $component->set('messages', [
             ['role' => 'user', 'parts' => ['text' => 'Test'], 'timestamp' => now()->format('g:i A'), 'id' => '1'],
         ]);
@@ -567,7 +567,7 @@ describe('GDPR Mode', function () {
         Prism::fake([$fakeResponse]);
 
         $component = livewire(ChatBubbleComponent::class);
-        $component->set('gdprConsent', true);
+        $component->set('hasGdprConsent', true);
         $component->set('messages', [
             ['role' => 'user', 'parts' => ['text' => 'Test'], 'timestamp' => now()->format('g:i A'), 'id' => '1'],
         ]);
@@ -585,7 +585,7 @@ describe('GDPR Mode', function () {
         Config::set('agentic-chat-bubble.gdpr.decline_button_text', 'Decline');
 
         livewire(ChatBubbleComponent::class)
-            ->set('gdprConsent', false)
+            ->set('hasGdprConsent', false)
             ->assertSee('Custom consent text')
             ->assertSee('Accept')
             ->assertSee('Decline')
@@ -597,7 +597,7 @@ describe('GDPR Mode', function () {
         Config::set('agentic-chat-bubble.gdpr.declined_message', 'You declined consent');
 
         livewire(ChatBubbleComponent::class)
-            ->set('gdprDeclined', true)
+            ->set('hasDeclinedGdpr', true)
             ->assertSee('You declined consent')
             ->assertSee('Chat is disabled without consent')
             ->assertSee('Reconsider consent');
@@ -608,12 +608,12 @@ describe('GDPR Mode', function () {
         RateLimiter::shouldReceive('tooManyAttempts')->andReturn(false);
 
         $component = livewire(ChatBubbleComponent::class)
-            ->set('gdprDeclined', true)
-            ->set('gdprConsent', false)
+            ->set('hasDeclinedGdpr', true)
+            ->set('hasGdprConsent', false)
             ->assertSee('Reconsider consent')
             ->call('giveGdprConsent')
-            ->assertSet('gdprConsent', true)
-            ->assertSet('gdprDeclined', false);
+            ->assertSet('hasGdprConsent', true)
+            ->assertSet('hasDeclinedGdpr', false);
 
         // Now can send messages
         $component->set('message', 'Test after reconsent')
