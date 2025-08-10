@@ -17,7 +17,7 @@
         "livewire/livewire": "^v3.6.4"
     },
     "require-dev": {
-        "orchestra/testbench": "^9.0",
+        "orchestra/testbench": "^10.4",
         "larastan/larastan": "^3.0",
         "pestphp/pest": "^3.8",
         "pestphp/pest-plugin-laravel": "^3.2",
