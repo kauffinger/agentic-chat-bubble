@@ -352,7 +352,7 @@ describe('Provider Configuration', function () {
 describe('Tool Loading', function () {
     it('loads tools from config as class strings', function () {
         // Create a simple mock tool using the existing tools from the package
-        $mockTool = (new Tool())
+        $mockTool = (new Tool)
             ->as('test_tool')
             ->for('Test tool')
             ->using(fn () => 'test result');
@@ -370,7 +370,7 @@ describe('Tool Loading', function () {
     });
 
     it('loads tools from config as callables', function () {
-        $mockTool = (new Tool())
+        $mockTool = (new Tool)
             ->as('callable_tool')
             ->for('Callable tool')
             ->using(fn () => 'callable result');
@@ -389,7 +389,7 @@ describe('Tool Loading', function () {
     });
 
     it('loads tools from config as objects', function () {
-        $mockTool = (new Tool())
+        $mockTool = (new Tool)
             ->as('object_tool')
             ->for('Object tool')
             ->using(fn () => 'object result');
@@ -406,12 +406,12 @@ describe('Tool Loading', function () {
     });
 
     it('loads dynamically registered tools', function () {
-        $mockTool1 = (new Tool())
+        $mockTool1 = (new Tool)
             ->as('dynamic1')
             ->for('Dynamic tool 1')
             ->using(fn () => 'result1');
 
-        $mockTool2 = (new Tool())
+        $mockTool2 = (new Tool)
             ->as('dynamic2')
             ->for('Dynamic tool 2')
             ->using(fn () => 'result2');
@@ -428,12 +428,12 @@ describe('Tool Loading', function () {
     });
 
     it('merges config and dynamic tools', function () {
-        $configTool = (new Tool())
+        $configTool = (new Tool)
             ->as('config_tool')
             ->for('Config tool')
             ->using(fn () => 'config result');
 
-        $dynamicTool = (new Tool())
+        $dynamicTool = (new Tool)
             ->as('dynamic_tool')
             ->for('Dynamic tool')
             ->using(fn () => 'dynamic result');
