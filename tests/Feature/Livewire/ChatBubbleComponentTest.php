@@ -351,17 +351,11 @@ describe('Provider Configuration', function () {
 
 describe('Tool Loading', function () {
     it('loads tools from config as class strings', function () {
-        // Create a mock tool that extends the Prism Tool class
-        $mockTool = new class extends Tool
-        {
-            public function __construct()
-            {
-                parent::__construct();
-                $this->as('test_tool')
-                    ->for('Test tool')
-                    ->using(fn () => 'test result');
-            }
-        };
+        // Create a simple mock tool using the existing tools from the package
+        $mockTool = (new Tool())
+            ->as('test_tool')
+            ->for('Test tool')
+            ->using(fn () => 'test result');
 
         app()->bind('TestToolClass', fn () => $mockTool);
         Config::set('agentic-chat-bubble.tools', ['TestToolClass']);
@@ -376,16 +370,10 @@ describe('Tool Loading', function () {
     });
 
     it('loads tools from config as callables', function () {
-        $mockTool = new class extends Tool
-        {
-            public function __construct()
-            {
-                parent::__construct();
-                $this->as('callable_tool')
-                    ->for('Callable tool')
-                    ->using(fn () => 'callable result');
-            }
-        };
+        $mockTool = (new Tool())
+            ->as('callable_tool')
+            ->for('Callable tool')
+            ->using(fn () => 'callable result');
 
         Config::set('agentic-chat-bubble.tools', [
             fn () => $mockTool,
@@ -401,16 +389,10 @@ describe('Tool Loading', function () {
     });
 
     it('loads tools from config as objects', function () {
-        $mockTool = new class extends Tool
-        {
-            public function __construct()
-            {
-                parent::__construct();
-                $this->as('object_tool')
-                    ->for('Object tool')
-                    ->using(fn () => 'object result');
-            }
-        };
+        $mockTool = (new Tool())
+            ->as('object_tool')
+            ->for('Object tool')
+            ->using(fn () => 'object result');
 
         Config::set('agentic-chat-bubble.tools', [$mockTool]);
 
@@ -424,27 +406,15 @@ describe('Tool Loading', function () {
     });
 
     it('loads dynamically registered tools', function () {
-        $mockTool1 = new class extends Tool
-        {
-            public function __construct()
-            {
-                parent::__construct();
-                $this->as('dynamic1')
-                    ->for('Dynamic tool 1')
-                    ->using(fn () => 'result1');
-            }
-        };
+        $mockTool1 = (new Tool())
+            ->as('dynamic1')
+            ->for('Dynamic tool 1')
+            ->using(fn () => 'result1');
 
-        $mockTool2 = new class extends Tool
-        {
-            public function __construct()
-            {
-                parent::__construct();
-                $this->as('dynamic2')
-                    ->for('Dynamic tool 2')
-                    ->using(fn () => 'result2');
-            }
-        };
+        $mockTool2 = (new Tool())
+            ->as('dynamic2')
+            ->for('Dynamic tool 2')
+            ->using(fn () => 'result2');
 
         app('agentic-chat-bubble.tools')->register('tool1', $mockTool1);
         app('agentic-chat-bubble.tools')->register('tool2', $mockTool2);
@@ -458,27 +428,15 @@ describe('Tool Loading', function () {
     });
 
     it('merges config and dynamic tools', function () {
-        $configTool = new class extends Tool
-        {
-            public function __construct()
-            {
-                parent::__construct();
-                $this->as('config_tool')
-                    ->for('Config tool')
-                    ->using(fn () => 'config result');
-            }
-        };
+        $configTool = (new Tool())
+            ->as('config_tool')
+            ->for('Config tool')
+            ->using(fn () => 'config result');
 
-        $dynamicTool = new class extends Tool
-        {
-            public function __construct()
-            {
-                parent::__construct();
-                $this->as('dynamic_tool')
-                    ->for('Dynamic tool')
-                    ->using(fn () => 'dynamic result');
-            }
-        };
+        $dynamicTool = (new Tool())
+            ->as('dynamic_tool')
+            ->for('Dynamic tool')
+            ->using(fn () => 'dynamic result');
 
         Config::set('agentic-chat-bubble.tools', [$configTool]);
         app('agentic-chat-bubble.tools')->register('dynamic', $dynamicTool);
