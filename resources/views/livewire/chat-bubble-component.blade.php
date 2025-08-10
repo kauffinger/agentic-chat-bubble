@@ -4,6 +4,7 @@
         x-data="{
             open: false,
             isMobile: window.innerWidth <= 640,
+            showGdprConsent: false,
         }"
         @resize.window="isMobile = window.innerWidth <= 640"
         class="fixed bottom-6 left-6 z-50"
@@ -66,7 +67,52 @@
 
             {{-- Chat Content Area --}}
             <div class="py-4 pl-4" x-ref="chatContainer">
-                @if (empty($messages))
+                {{-- GDPR Consent Modal --}}
+                @if (config('agentic-chat-bubble.gdpr.enabled') && ! $gdprConsent)
+                    <div
+                        x-show="showGdprConsent"
+                        x-transition:enter="transition duration-200 ease-out"
+                        x-transition:enter-start="opacity-0"
+                        x-transition:enter-end="opacity-100"
+                        x-transition:leave="transition duration-150 ease-in"
+                        x-transition:leave-start="opacity-100"
+                        x-transition:leave-end="opacity-0"
+                        class="bg-opacity-95 absolute inset-0 z-50 flex items-center justify-center bg-white p-4"
+                        style="display: none"
+                    >
+                        <div class="max-w-sm border-2 border-neutral-800 bg-white p-6">
+                            <h4 class="mb-4 text-lg font-bold">Privacy Notice</h4>
+                            <p class="mb-6 text-sm">
+                                {{ config('agentic-chat-bubble.gdpr.consent_text') }}
+                            </p>
+                            <div class="flex gap-2">
+                                <button
+                                    wire:click="giveGdprConsent"
+                                    @click="showGdprConsent = false"
+                                    class="flex-1 bg-neutral-900 px-4 py-2 font-bold text-white transition-colors hover:bg-neutral-700"
+                                >
+                                    {{ config('agentic-chat-bubble.gdpr.consent_button_text', 'I Consent') }}
+                                </button>
+                                <button
+                                    wire:click="declineGdprConsent"
+                                    @click="showGdprConsent = false"
+                                    class="flex-1 border-2 border-neutral-800 bg-white px-4 py-2 font-bold transition-colors hover:bg-neutral-100"
+                                >
+                                    {{ config('agentic-chat-bubble.gdpr.decline_button_text', 'No Thanks') }}
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                @endif
+
+                {{-- Show declined message if user declined consent --}}
+                @if (config('agentic-chat-bubble.gdpr.enabled') && $gdprDeclined)
+                    <div class="mt-8 p-4 text-center">
+                        <p class="text-sm text-gray-600">
+                            {{ config('agentic-chat-bubble.gdpr.declined_message') }}
+                        </p>
+                    </div>
+                @elseif (empty($messages))
                     <p class="mt-8 text-center text-gray-500">
                         {{ config('agentic-chat-bubble.ui.empty_state_text', 'Start a conversation...') }}
                     </p>
@@ -107,26 +153,50 @@
 
             {{-- Chat Input Area --}}
             <div class="absolute right-0 bottom-0 left-0 border-t-2 border-neutral-800 bg-white p-4">
-                <form wire:submit="sendMessage" class="flex flex-col gap-2">
-                    @error('message')
-                        <p class="text-sm text-red-600">{{ $message }}</p>
-                    @enderror
-
-                    <div class="flex gap-2">
-                        <input
-                            wire:model.blur="message"
-                            type="text"
-                            placeholder="{{ config('agentic-chat-bubble.ui.placeholder', 'Type your message...') }}"
-                            class="{{ $errors->has('message') ? 'border-red-600' : 'border-neutral-800' }} {{ $errors->has('message') ? 'focus:ring-red-600' : 'focus:ring-neutral-800' }} flex-1 border-2 px-3 py-2 focus:ring-2 focus:ring-offset-2 focus:outline-none"
-                        />
+                @if (config('agentic-chat-bubble.gdpr.enabled') && $gdprDeclined)
+                    {{-- Show disabled state when consent is declined --}}
+                    <div class="text-center">
+                        <p class="mb-2 text-sm text-gray-500">Chat is disabled without consent</p>
                         <button
-                            type="submit"
-                            class="bg-neutral-900 px-4 py-2 font-bold text-white transition-colors hover:bg-neutral-700"
+                            @click="showGdprConsent = true"
+                            class="text-sm text-neutral-900 underline hover:no-underline"
                         >
-                            Send
+                            Reconsider consent
                         </button>
                     </div>
-                </form>
+                @else
+                    <form
+                        wire:submit="sendMessage"
+                        @if (config('agentic-chat-bubble.gdpr.enabled') && ! $gdprConsent && ! $gdprDeclined)
+                            x-on:submit="
+                                if (! @json($gdprConsent)) {
+                                    showGdprConsent = true
+                                    $event.preventDefault()
+                                }
+                            "
+                        @endif
+                        class="flex flex-col gap-2"
+                    >
+                        @error('message')
+                            <p class="text-sm text-red-600">{{ $message }}</p>
+                        @enderror
+
+                        <div class="flex gap-2">
+                            <input
+                                wire:model.blur="message"
+                                type="text"
+                                placeholder="{{ config('agentic-chat-bubble.ui.placeholder', 'Type your message...') }}"
+                                class="{{ $errors->has('message') ? 'border-red-600' : 'border-neutral-800' }} {{ $errors->has('message') ? 'focus:ring-red-600' : 'focus:ring-neutral-800' }} flex-1 border-2 px-3 py-2 focus:ring-2 focus:ring-offset-2 focus:outline-none"
+                            />
+                            <button
+                                type="submit"
+                                class="bg-neutral-900 px-4 py-2 font-bold text-white transition-colors hover:bg-neutral-700"
+                            >
+                                Send
+                            </button>
+                        </div>
+                    </form>
+                @endif
             </div>
         </div>
 

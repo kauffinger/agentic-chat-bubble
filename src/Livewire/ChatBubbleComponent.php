@@ -25,6 +25,12 @@ class ChatBubbleComponent extends Component
     #[Session]
     public array $messages = [];
 
+    #[Session]
+    public bool $gdprConsent = false;
+
+    #[Session]
+    public bool $gdprDeclined = false;
+
     public function mount(): void {}
 
     protected function rules(): array
@@ -37,6 +43,12 @@ class ChatBubbleComponent extends Component
     public function sendMessage(): void
     {
         $this->validate();
+
+        // Check GDPR consent if enabled
+        if (Config::get('agentic-chat-bubble.gdpr.enabled', false) && ! $this->gdprConsent) {
+            // Client-side will handle showing the modal
+            return;
+        }
 
         // Check rate limiting if enabled
         if (Config::get('agentic-chat-bubble.rate_limit.enabled', true)) {
@@ -65,6 +77,11 @@ class ChatBubbleComponent extends Component
     public function runChatToolLoop(UpdateStreamDataFromPrismChunk $updateStreamDataFromPrismChunk): void
     {
         if (empty($this->messages)) {
+            return;
+        }
+
+        // Check GDPR consent if enabled
+        if (Config::get('agentic-chat-bubble.gdpr.enabled', false) && ! $this->gdprConsent) {
             return;
         }
 
@@ -154,6 +171,18 @@ class ChatBubbleComponent extends Component
     {
         $this->messages = [];
         $this->message = '';
+    }
+
+    public function giveGdprConsent(): void
+    {
+        $this->gdprConsent = true;
+        $this->gdprDeclined = false;
+    }
+
+    public function declineGdprConsent(): void
+    {
+        $this->gdprConsent = false;
+        $this->gdprDeclined = true;
     }
 
     public function render(): View
