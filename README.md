@@ -30,7 +30,15 @@ Add the chat bubble component to your layout template:
 {{ livewire:agentic-chat-bubble }}
 ```
 
-### 3. Import JavaScript Component
+### 3. Install Required NPM Dependencies
+
+The addon requires two JavaScript libraries for markdown processing and syntax highlighting. Install them in your main application:
+
+```bash
+npm install markdown-it highlight.js
+```
+
+### 4. Import JavaScript Component
 
 Import and register the `markdownProcessor` component in your main JavaScript file:
 
@@ -42,7 +50,7 @@ import markdownProcessor from '../../vendor/kauffinger/agentic-chat-bubble/resou
 Alpine.data('markdownProcessor', markdownProcessor);
 ```
 
-### 4. Import CSS Styles
+### 5. Import CSS Styles
 
 The addon's styles need to be imported into your application's CSS:
 
@@ -79,7 +87,7 @@ After adding the imports and updating Tailwind config, rebuild your assets:
 npm run build
 ```
 
-### 5. Publish Configuration (Optional)
+### 6. Publish Configuration (Optional)
 
 To customize the addon settings, publish the config file:
 
@@ -94,7 +102,7 @@ This will create `config/agentic-chat-bubble.php` where you can configure:
 - UI settings
 - Max message length and other limits
 
-### 6. Dependencies
+### 7. Other Dependencies
 
 Ensure your application has the following dependencies (likely already installed):
 
