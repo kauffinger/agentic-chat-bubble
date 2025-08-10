@@ -2,6 +2,7 @@
 
 namespace Kauffinger\AgenticChatBubble\Livewire;
 
+use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\View\View;
 use Kauffinger\AgenticChatBubble\Actions\UpdateStreamDataFromPrismChunk;
 use Kauffinger\AgenticChatBubble\Dtos\StreamData;
@@ -13,6 +14,7 @@ use Prism\Prism\Prism;
 use Prism\Prism\ValueObjects\Messages\AssistantMessage;
 use Prism\Prism\ValueObjects\Messages\ToolResultMessage;
 use Prism\Prism\ValueObjects\Messages\UserMessage;
+use Statamic\Facades\Config;
 
 class ChatBubbleComponent extends Component
 {
@@ -27,13 +29,26 @@ class ChatBubbleComponent extends Component
     protected function rules(): array
     {
         return [
-            'message' => 'required|string|max:'.config('agentic-chat-bubble.max_message_length', 1000),
+            'message' => 'required|string|max:'.Config::get('agentic-chat-bubble.max_message_length', 1000),
         ];
     }
 
     public function sendMessage(): void
     {
         $this->validate();
+
+        // Check rate limiting if enabled
+        if (Config::get('agentic-chat-bubble.rate_limit.enabled', true)) {
+            $key = $this->getRateLimitKey();
+            $maxAttempts = Config::get('agentic-chat-bubble.rate_limit.max_messages', 30);
+
+            if (RateLimiter::tooManyAttempts($key, $maxAttempts)) {
+                $seconds = RateLimiter::availableIn($key);
+                $this->addError('message', "Rate limit exceeded. Please wait {$seconds} seconds before sending another message.");
+
+                return;
+            }
+        }
 
         $this->messages[] = [
             'id' => uniqid(),
@@ -52,10 +67,34 @@ class ChatBubbleComponent extends Component
             return;
         }
 
+        // Check rate limiting if enabled
+        if (Config::get('agentic-chat-bubble.rate_limit.enabled', true)) {
+            $key = $this->getRateLimitKey();
+            $maxAttempts = Config::get('agentic-chat-bubble.rate_limit.max_messages', 30);
+            $decayMinutes = Config::get('agentic-chat-bubble.rate_limit.decay_minutes', 1);
+
+            if (RateLimiter::tooManyAttempts($key, $maxAttempts)) {
+                $seconds = RateLimiter::availableIn($key);
+
+                // Fake an assistant error message
+                $this->messages[] = [
+                    'id' => uniqid(),
+                    'parts' => ['text' => "⚠️ Rate limit exceeded. Please wait {$seconds} seconds before sending another message."],
+                    'role' => 'assistant',
+                    'timestamp' => now()->format('g:i A'),
+                ];
+
+                return;
+            }
+
+            // Record the attempt
+            RateLimiter::hit($key, $decayMinutes * 60);
+        }
+
         $provider = $this->getProvider();
-        $model = config('agentic-chat-bubble.model', 'gpt-4-mini');
-        $systemPrompt = config('agentic-chat-bubble.system_prompt');
-        $maxSteps = config('agentic-chat-bubble.max_steps', 5);
+        $model = Config::get('agentic-chat-bubble.model', 'gpt-4-mini');
+        $systemPrompt = Config::get('agentic-chat-bubble.system_prompt');
+        $maxSteps = Config::get('agentic-chat-bubble.max_steps', 5);
 
         $generator = Prism::text()
             ->using($provider, $model)
@@ -122,7 +161,7 @@ class ChatBubbleComponent extends Component
 
     protected function getProvider(): Provider
     {
-        $providerString = config('agentic-chat-bubble.provider', 'openai');
+        $providerString = Config::get('agentic-chat-bubble.provider', 'openai');
 
         return match (strtolower($providerString)) {
             'openai' => Provider::OpenAI,
@@ -138,7 +177,7 @@ class ChatBubbleComponent extends Component
         $tools = [];
 
         // Get tools from config
-        $configuredTools = config('agentic-chat-bubble.tools', []);
+        $configuredTools = Config::get('agentic-chat-bubble.tools', []);
 
         // Merge with dynamically registered tools
         $dynamicTools = app('agentic-chat-bubble.tools')->all();
@@ -158,5 +197,11 @@ class ChatBubbleComponent extends Component
         }
 
         return $tools;
+    }
+
+    protected function getRateLimitKey(): string
+    {
+        // Use session ID as the unique identifier for rate limiting
+        return 'agentic-chat-bubble:'.session()->getId();
     }
 }

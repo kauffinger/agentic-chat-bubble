@@ -55,6 +55,21 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Rate Limiting
+    |--------------------------------------------------------------------------
+    |
+    | Configure rate limiting for chat messages to prevent abuse.
+    | Users can only send a certain number of messages per time period.
+    |
+    */
+    'rate_limit' => [
+        'enabled' => env('AGENTIC_CHAT_RATE_LIMIT_ENABLED', true),
+        'max_messages' => env('AGENTIC_CHAT_RATE_LIMIT_MAX', 30),
+        'decay_minutes' => env('AGENTIC_CHAT_RATE_LIMIT_DECAY', 1),
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
     | AI Tools
     |--------------------------------------------------------------------------
     |
