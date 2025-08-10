@@ -1,16 +1,25 @@
 <div>
     {{-- Chat Bubble Button --}}
-    <div x-data="{ open: false }" class="fixed bottom-6 left-6 z-50">
+    <div
+        x-data="{
+            open: false,
+            isMobile: window.innerWidth <= 640,
+        }"
+        @resize.window="isMobile = window.innerWidth <= 640"
+        class="fixed bottom-6 left-6 z-50"
+    >
         {{-- Floating Chat Window --}}
         <div
             x-show="open"
+            x-trap.noscroll="open && isMobile"
             x-transition:enter="transition duration-200 ease-out"
             x-transition:enter-start="scale-95 opacity-0"
             x-transition:enter-end="scale-100 opacity-100"
             x-transition:leave="transition duration-150 ease-in"
             x-transition:leave-start="scale-100 opacity-100"
             x-transition:leave-end="scale-95 opacity-0"
-            @click.outside="window.innerWidth > 640 && (open = false)"
+            @click.outside="!isMobile && (open = false)"
+            @keydown.escape="open = false"
             class="fixed inset-0 h-full w-full border-2 border-neutral-800 bg-white sm:absolute sm:inset-auto sm:bottom-20 sm:left-0 sm:h-[500px] sm:w-[380px] sm:border-2 sm:shadow-lg"
             style="display: none"
         >
