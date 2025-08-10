@@ -97,11 +97,13 @@ class ChatBubbleComponent extends Component
         $systemPrompt = Config::get('agentic-chat-bubble.system_prompt');
         $maxSteps = Config::get('agentic-chat-bubble.max_steps', 5);
 
+        $tools = app(ToolRegistry::class)->getAllTools();
+
         $generator = Prism::text()
             ->using($provider, $model)
             ->withSystemPrompt($systemPrompt)
             ->withMessages($this->messagesToPrism($this->messages))
-            ->withTools($this->getTools())
+            ->withTools($tools)
             ->withMaxSteps($maxSteps)
             ->asStream();
 
@@ -171,23 +173,6 @@ class ChatBubbleComponent extends Component
             'ollama' => Provider::Ollama,
             default => Provider::OpenAI,
         };
-    }
-
-    protected function getTools(): array
-    {
-        // Get tools from config
-        $configuredTools = Config::get('agentic-chat-bubble.tools', []);
-
-        // Get the app-resolved ToolRegistry
-        $toolRegistry = app(ToolRegistry::class);
-
-        // Resolve config tools fresh each time (don't persist them)
-        $resolvedConfigTools = $toolRegistry->resolveTools($configuredTools);
-
-        // Get persisted dynamic tools
-        $dynamicTools = $toolRegistry->all();
-
-        return array_merge($resolvedConfigTools, $dynamicTools);
     }
 
     protected function getRateLimitKey(): string

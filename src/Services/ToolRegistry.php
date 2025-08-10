@@ -12,7 +12,7 @@ class ToolRegistry
     /**
      * Register a tool
      */
-    public function register(string|callable|Tool $tool): void
+    public function register(mixed $tool): void
     {
         $this->tools[] = $tool;
     }
@@ -35,25 +35,49 @@ class ToolRegistry
         $resolvedTools = [];
 
         foreach ($tools as $tool) {
-            if (is_string($tool)) {
-                // Class string - resolve from container
-                $resolvedTools[] = app($tool);
-            } elseif (is_callable($tool)) {
-                // Closure or callable - invoke it
-                $resolvedTool = $tool();
-                if (! $resolvedTool instanceof Tool) {
-                    throw new InvalidArgumentException('Callable must return a Tool instance');
-                }
-                $resolvedTools[] = $resolvedTool;
-            } elseif ($tool instanceof Tool) {
-                // Already instantiated
-                $resolvedTools[] = $tool;
-            } else {
-                throw new InvalidArgumentException('Tool must be a string, callable, or Tool instance');
-            }
+            $resolvedTools[] = $this->resolveTool($tool);
         }
 
         return $resolvedTools;
+    }
+
+    /**
+     * Get all tools (config + dynamic) merged together
+     */
+    public function getAllTools(): array
+    {
+        // Get tools from config and resolve them fresh each time (don't persist them)
+        $configuredTools = \Statamic\Facades\Config::get('agentic-chat-bubble.tools', []);
+        $resolvedConfigTools = $this->resolveTools($configuredTools);
+
+        // Get persisted dynamic tools
+        $dynamicTools = $this->all();
+
+        return array_merge($resolvedConfigTools, $dynamicTools);
+    }
+
+    /**
+     * Resolve a single tool to a Tool instance
+     */
+    private function resolveTool(mixed $tool): Tool
+    {
+        if (is_string($tool)) {
+            // Class string - resolve from container
+            return app($tool);
+        } elseif (is_callable($tool)) {
+            // Closure or callable - invoke it
+            $resolvedTool = $tool();
+            if (! $resolvedTool instanceof Tool) {
+                throw new InvalidArgumentException('Callable must return a Tool instance');
+            }
+
+            return $resolvedTool;
+        } elseif ($tool instanceof Tool) {
+            // Already instantiated
+            return $tool;
+        } else {
+            throw new InvalidArgumentException('Tool must be a string, callable, or Tool instance');
+        }
     }
 
     /**
@@ -66,22 +90,7 @@ class ToolRegistry
         $resolvedTools = [];
 
         foreach ($this->tools as $tool) {
-            if (is_string($tool)) {
-                // Class string - resolve from container
-                $resolvedTools[] = app($tool);
-            } elseif (is_callable($tool)) {
-                // Closure or callable - invoke it
-                $resolvedTool = $tool();
-                if (! $resolvedTool instanceof Tool) {
-                    throw new InvalidArgumentException('Callable must return a Tool instance');
-                }
-                $resolvedTools[] = $resolvedTool;
-            } elseif ($tool instanceof Tool) {
-                // Already instantiated
-                $resolvedTools[] = $tool;
-            } else {
-                throw new InvalidArgumentException('Tool must be a string, callable, or Tool instance');
-            }
+            $resolvedTools[] = $this->resolveTool($tool);
         }
 
         return $resolvedTools;

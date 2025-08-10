@@ -46,7 +46,7 @@ class ServiceProvider extends AddonServiceProvider
     /**
      * Register a tool to be used by the chat bubble
      */
-    public static function registerTool(string|callable|object $tool): void
+    public static function registerTool(mixed $tool): void
     {
         app(ToolRegistry::class)->register($tool);
     }
