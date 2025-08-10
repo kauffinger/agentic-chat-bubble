@@ -20,5 +20,8 @@ jobs:
       - name: Install composer dependencies
         uses: ramsey/composer-install@v3
 
+      - name: Install node dependencies
+        run: npm ci
+
       - name: Style Check
         run: composer format:check
