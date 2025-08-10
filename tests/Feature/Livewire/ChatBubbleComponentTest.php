@@ -57,6 +57,14 @@ describe('Component Rendering & Initialization', function () {
         livewire(ChatBubbleComponent::class)
             ->assertSee('Start a conversation...');
     });
+
+    it('shows custom empty state text when configured', function () {
+        Config::set('agentic-chat-bubble.ui.empty_state_text', 'Begin your chat here');
+
+        livewire(ChatBubbleComponent::class)
+            ->assertSee('Begin your chat here')
+            ->assertDontSee('Start a conversation...');
+    });
 });
 
 describe('Message Sending & Validation', function () {

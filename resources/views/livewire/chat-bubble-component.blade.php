@@ -67,7 +67,9 @@
             {{-- Chat Content Area --}}
             <div class="py-4 pl-4" x-ref="chatContainer">
                 @if (empty($messages))
-                    <p class="mt-8 text-center text-gray-500">Start a conversation...</p>
+                    <p class="mt-8 text-center text-gray-500">
+                        {{ config('agentic-chat-bubble.ui.empty_state_text', 'Start a conversation...') }}
+                    </p>
                 @else
                     <div class="space-y-4">
                         <div
