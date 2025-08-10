@@ -70,6 +70,29 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | GDPR Compliance
+    |--------------------------------------------------------------------------
+    |
+    | Configure GDPR consent requirements for the chat bubble.
+    | When enabled, users must consent before messages are sent to AI providers.
+    |
+    */
+    'gdpr' => [
+        'enabled' => env('AGENTIC_CHAT_GDPR_ENABLED', false),
+        'consent_text' => env(
+            'AGENTIC_CHAT_GDPR_CONSENT_TEXT',
+            'This chat uses AI services to process your messages. Your messages will be sent to our AI provider for processing. Do you consent to this data processing?'
+        ),
+        'consent_button_text' => env('AGENTIC_CHAT_GDPR_CONSENT_BUTTON', 'I Consent'),
+        'decline_button_text' => env('AGENTIC_CHAT_GDPR_DECLINE_BUTTON', 'No Thanks'),
+        'declined_message' => env(
+            'AGENTIC_CHAT_GDPR_DECLINED_MESSAGE',
+            'You need to provide consent to use the chat assistant. You can close this window and reopen it if you change your mind.'
+        ),
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
     | AI Tools
     |--------------------------------------------------------------------------
     |

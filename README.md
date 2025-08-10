@@ -130,17 +130,66 @@ After publishing the config file, you can customize:
     'position' => 'bottom-left', // bottom-left, bottom-right
     'title' => 'Assistant',
     'placeholder' => 'Type your message...',
+    'empty_state_text' => 'Start a conversation...',
     'thinking_button_text' => '🧠',
     'thinking_prose_size' => 'prose-sm',
 ],
 ```
 
-You can also set these values using environment variables:
+### GDPR Compliance
 
-```env
-AGENTIC_CHAT_PROVIDER=anthropic
-AGENTIC_CHAT_MODEL=claude-3-sonnet
-AGENTIC_CHAT_MAX_MESSAGE_LENGTH=2000
+The addon includes built-in GDPR compliance features that require user consent before sending messages to AI providers.
+
+#### Configuration
+
+Enable GDPR mode by setting `enabled` to `true` in the config file:
+
+```php
+'gdpr' => [
+    'enabled' => env('AGENTIC_CHAT_GDPR_ENABLED', false),
+    'consent_text' => 'This chat uses AI services to process your messages. Your messages will be sent to our AI provider for processing. Do you consent to this data processing?',
+    'consent_button_text' => 'I Consent',
+    'decline_button_text' => 'No Thanks',
+    'declined_message' => 'You need to provide consent to use the chat assistant. You can close this window and reopen it if you change your mind.',
+],
+```
+
+#### Customizing Consent Messages
+
+All GDPR-related text can be customized directly in the config file to match your privacy policy and requirements:
+
+```php
+// In config/agentic-chat-bubble.php
+'gdpr' => [
+    'enabled' => env('AGENTIC_CHAT_GDPR_ENABLED', false),
+    'consent_text' => 'We use AI to process your messages. Your data will be sent to our AI provider. Do you agree?',
+    'consent_button_text' => 'Accept',
+    'decline_button_text' => 'Decline',
+    'declined_message' => 'Chat requires consent. You can reconsider at any time.',
+],
+```
+
+#### How It Works
+
+When GDPR mode is enabled:
+
+1. **First Message**: Users see a consent modal when they try to send their first message
+2. **Consent Given**: Users can chat normally after giving consent
+3. **Consent Declined**: Chat is disabled, but users can reconsider their decision at any time
+4. **Session Persistence**: Consent choice is stored in the session and persists until the session expires
+
+The consent modal clearly explains that messages will be sent to AI providers for processing, ensuring transparency and compliance with data protection regulations.
+
+### Rate Limiting
+
+Configure rate limiting to prevent abuse:
+
+```php
+'rate_limit' => [
+    'enabled' => env('AGENTIC_CHAT_RATE_LIMIT_ENABLED', true),
+    'max_messages' => env('AGENTIC_CHAT_RATE_LIMIT_MAX', 30),
+    'decay_minutes' => env('AGENTIC_CHAT_RATE_LIMIT_DECAY', 1),
+],
 ```
 
 ### Custom Tools
