@@ -27,8 +27,12 @@ Add the chat bubble component to your layout template:
 
 ```antlers
 <!-- In your layout file (e.g., resources/views/layout.antlers.html) -->
-{{ livewire:agentic-chat-bubble }}
+{{ nocache }}
+    {{ livewire:agentic-chat-bubble }}
+{{ /nocache }}
 ```
+
+**Important**: The Livewire component must be wrapped in a `{{ nocache }}` tag to ensure proper functionality with Statamic's static caching. This prevents the component from being cached and ensures it remains interactive.
 
 ### 3. Install Required NPM Dependencies
 
