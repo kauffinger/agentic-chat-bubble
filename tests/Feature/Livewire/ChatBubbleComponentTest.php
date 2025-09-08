@@ -33,12 +33,9 @@ beforeEach(function () {
     Config::set('agentic-chat-bubble.rate_limit.decay_minutes', 1);
     Config::set('agentic-chat-bubble.tools', []);
 
-    // Initialize the ToolRegistry and clear it before each test
     app()->singleton(ToolRegistry::class);
     app(ToolRegistry::class)->clear();
 });
-
-// No need for Mockery::close() when using Pest Laravel's mock() helper
 
 describe('Component Rendering & Initialization', function () {
     it('can render the chat bubble component', function () {
@@ -58,12 +55,9 @@ describe('Component Rendering & Initialization', function () {
             ->assertSee('Start a conversation...');
     });
 
-    it('shows custom empty state text when configured', function () {
-        Config::set('agentic-chat-bubble.ui.empty_state_text', 'Begin your chat here');
-
+    it('shows empty state text from translations', function () {
         livewire(ChatBubbleComponent::class)
-            ->assertSee('Begin your chat here')
-            ->assertDontSee('Start a conversation...');
+            ->assertSee('Start a conversation...');
     });
 });
 
@@ -84,7 +78,6 @@ describe('Message Sending & Validation', function () {
     });
 
     it('sends valid message and clears input', function () {
-        // Mock RateLimiter to allow the message
         RateLimiter::shouldReceive('tooManyAttempts')
             ->andReturn(false);
 
@@ -105,8 +98,6 @@ describe('Message Sending & Validation', function () {
         RateLimiter::shouldReceive('tooManyAttempts')
             ->andReturn(false);
 
-        // The JavaScript dispatch happens via $this->js() which is hard to test directly
-        // We'll verify the message is added and cleared which indicates sendMessage worked
         $component = livewire(ChatBubbleComponent::class)
             ->set('message', 'Test message')
             ->call('sendMessage');
@@ -130,7 +121,6 @@ describe('Rate Limiting', function () {
             ->call('sendMessage')
             ->assertHasErrors(['message']);
 
-        // Verify the error message contains rate limit text
         $component = livewire(ChatBubbleComponent::class);
         $component->set('message', 'Test');
         $component->call('sendMessage');
@@ -183,7 +173,6 @@ describe('Rate Limiting', function () {
                 return str_starts_with($key, 'agentic-chat-bubble:') && $seconds === 120;
             });
 
-        // Mock Prism to return a simple response
         $fakeResponse = TextResponseFake::make()
             ->withText('Response')
             ->withUsage(new Usage(10, 20));
@@ -224,7 +213,6 @@ describe('AI Integration with Prism', function () {
         RateLimiter::shouldReceive('tooManyAttempts')->andReturn(false);
         RateLimiter::shouldReceive('hit')->once();
 
-        // Create a response with tool calls
         $fakeResponse = TextResponseFake::make()
             ->withToolCalls([
                 new ToolCall(
@@ -245,7 +233,6 @@ describe('AI Integration with Prism', function () {
         ]);
         $component->call('runChatToolLoop');
 
-        // The component processes tool calls and adds the assistant message
         expect($component->messages)->toHaveCount(2);
         expect($component->messages[1]['role'])->toBe('assistant');
         expect($component->messages[1]['parts'])->toHaveKey('toolCalls');
@@ -269,7 +256,6 @@ describe('AI Integration with Prism', function () {
         ]);
         $component->call('runChatToolLoop');
 
-        // Verify the response was processed (streaming is handled internally)
         expect($component->messages)->toHaveCount(2);
         expect($component->messages[1]['parts']['text'])->toBe('This is a streaming response');
     });
@@ -279,7 +265,6 @@ describe('AI Integration with Prism', function () {
         $component->set('messages', []);
         $component->call('runChatToolLoop');
 
-        // Should not add any messages when array is empty
         expect($component->messages)->toHaveCount(0);
     });
 });
@@ -430,33 +415,27 @@ describe('Session Persistence', function () {
             ['role' => 'user', 'parts' => ['text' => 'Hello'], 'timestamp' => now()->format('g:i A'), 'id' => '1'],
         ];
 
-        // Set messages on first component
         $component1 = livewire(ChatBubbleComponent::class)
             ->set('messages', $messages);
 
-        // Create new component instance - should restore from session
         $component2 = livewire(ChatBubbleComponent::class);
 
         expect($component2->messages)->toBe($messages);
     });
 
     it('persists message input in session', function () {
-        // Set message on first component
         $component1 = livewire(ChatBubbleComponent::class)
             ->set('message', 'Test message');
 
-        // Create new component instance - should restore from session
         $component2 = livewire(ChatBubbleComponent::class);
 
         expect($component2->message)->toBe('Test message');
     });
 
     it('persists GDPR consent in session', function () {
-        // Set GDPR consent on first component
         $component1 = livewire(ChatBubbleComponent::class)
             ->set('hasGdprConsent', true);
 
-        // Create new component instance - should restore from session
         $component2 = livewire(ChatBubbleComponent::class);
 
         expect($component2->hasGdprConsent)->toBe(true);
@@ -487,7 +466,6 @@ describe('GDPR Mode', function () {
             ->assertSet('message', '')
             ->assertHasNoErrors();
 
-        // Verify message was added
         expect($component->messages)->toHaveCount(1);
         expect($component->messages[0]['parts']['text'])->toBe('Test message');
     });
@@ -501,7 +479,6 @@ describe('GDPR Mode', function () {
             ->call('sendMessage')
             ->assertSet('message', 'Test message'); // Message not cleared
 
-        // Message should not be added
         expect($component->messages)->toHaveCount(0);
     });
 
@@ -541,7 +518,6 @@ describe('GDPR Mode', function () {
     it('blocks runChatToolLoop without consent when GDPR enabled', function () {
         Config::set('agentic-chat-bubble.gdpr.enabled', true);
 
-        // Mock Prism - should not be called
         Prism::fake([]);
 
         $component = livewire(ChatBubbleComponent::class);
@@ -551,7 +527,6 @@ describe('GDPR Mode', function () {
         ]);
         $component->call('runChatToolLoop');
 
-        // Messages should remain unchanged (no assistant response added)
         expect($component->messages)->toHaveCount(1);
     });
 
@@ -573,32 +548,27 @@ describe('GDPR Mode', function () {
         ]);
         $component->call('runChatToolLoop');
 
-        // Assistant response should be added
         expect($component->messages)->toHaveCount(2);
         expect($component->messages[1]['role'])->toBe('assistant');
     });
 
     it('shows consent UI elements when GDPR enabled', function () {
         Config::set('agentic-chat-bubble.gdpr.enabled', true);
-        Config::set('agentic-chat-bubble.gdpr.consent_text', 'Custom consent text');
-        Config::set('agentic-chat-bubble.gdpr.consent_button_text', 'Accept');
-        Config::set('agentic-chat-bubble.gdpr.decline_button_text', 'Decline');
 
         livewire(ChatBubbleComponent::class)
             ->set('hasGdprConsent', false)
-            ->assertSee('Custom consent text')
-            ->assertSee('Accept')
-            ->assertSee('Decline')
+            ->assertSee('We process your messages to provide assistance. Your data will be handled according to our privacy policy.')
+            ->assertSee('I Consent')
+            ->assertSee('No Thanks')
             ->assertSee('Privacy Notice');
     });
 
     it('shows declined message when consent declined', function () {
         Config::set('agentic-chat-bubble.gdpr.enabled', true);
-        Config::set('agentic-chat-bubble.gdpr.declined_message', 'You declined consent');
 
         livewire(ChatBubbleComponent::class)
             ->set('hasDeclinedGdpr', true)
-            ->assertSee('You declined consent')
+            ->assertSee('You have declined consent. Chat functionality is disabled.')
             ->assertSee('Chat is disabled without consent')
             ->assertSee('Reconsider consent');
     });
