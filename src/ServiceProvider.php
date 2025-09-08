@@ -3,6 +3,7 @@
 namespace Kauffinger\AgenticChatBubble;
 
 use Kauffinger\AgenticChatBubble\Livewire\ChatBubbleComponent;
+use Kauffinger\AgenticChatBubble\Services\StatamicSearchToolService;
 use Kauffinger\AgenticChatBubble\Services\ToolRegistry;
 use Livewire\Livewire;
 use Statamic\Providers\AddonServiceProvider;
@@ -20,27 +21,26 @@ class ServiceProvider extends AddonServiceProvider
 
     public function bootAddon()
     {
-        // Register Livewire components
         Livewire::component('agentic-chat-bubble', ChatBubbleComponent::class);
 
-        // Register views with custom namespace
         $this->loadViewsFrom(__DIR__.'/../resources/views', 'agentic-chat-bubble');
 
-        // Register services in the container
-        $this->app->singleton(\Kauffinger\AgenticChatBubble\Services\StatamicSearchToolService::class);
+        $this->app->singleton(StatamicSearchToolService::class);
+        $this->app->singleton(ToolRegistry::class);
 
-        // Publish config file
+        $this->loadTranslationsFrom(__DIR__.'/../resources/lang', 'agentic-chat-bubble');
+
         $this->publishes([
             __DIR__.'/../config/agentic-chat-bubble.php' => config_path('agentic-chat-bubble.php'),
         ], 'agentic-chat-bubble-config');
 
-        // Merge config
+        $this->publishes([
+            __DIR__.'/../resources/lang' => $this->app->langPath('vendor/agentic-chat-bubble'),
+        ], 'agentic-chat-bubble-translations');
+
         $this->mergeConfigFrom(
             __DIR__.'/../config/agentic-chat-bubble.php', 'agentic-chat-bubble'
         );
-
-        // Register singleton for tool management
-        $this->app->singleton(ToolRegistry::class);
     }
 
     /**
