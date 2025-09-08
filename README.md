@@ -132,13 +132,33 @@ After publishing the config file, you can customize:
 ```php
 'ui' => [
     'position' => 'bottom-left', // bottom-left, bottom-right
-    'title' => 'Assistant',
-    'placeholder' => 'Type your message...',
-    'empty_state_text' => 'Start a conversation...',
     'thinking_button_text' => '🧠',
     'thinking_prose_size' => 'prose-sm',
 ],
 ```
+
+### Customizing UI Text
+
+All UI text (titles, placeholders, messages) is managed through Laravel's translation system. To customize these texts:
+
+1. **Publish the language files**:
+
+```bash
+php artisan vendor:publish --tag="agentic-chat-bubble-lang"
+```
+
+2. **Edit the published translation file** at `resources/lang/vendor/agentic-chat-bubble/en/chat-bubble.php`:
+
+```php
+return [
+    'title' => 'Assistant',
+    'placeholder' => 'Type your message...',
+    'send' => 'Send',
+    // ... other translations
+];
+```
+
+3. **For other languages**, create additional translation files in the appropriate language directory (e.g., `resources/lang/vendor/agentic-chat-bubble/de/chat-bubble.php` for German).
 
 ### GDPR Compliance
 
@@ -160,16 +180,34 @@ Enable GDPR mode by setting `enabled` to `true` in the config file:
 
 #### Customizing Consent Messages
 
-All GDPR-related text can be customized directly in the config file to match your privacy policy and requirements:
+All GDPR-related text is managed through Laravel's translation system. To customize these messages:
+
+1. **Publish the language files** (if not already done):
+
+```bash
+php artisan vendor:publish --tag="agentic-chat-bubble-lang"
+```
+
+2. **Edit the consent-related translations** in `resources/lang/vendor/agentic-chat-bubble/en/chat-bubble.php`:
 
 ```php
-// In config/agentic-chat-bubble.php
+return [
+    // ... other translations
+    'privacy_notice' => 'Privacy Notice',
+    'consent_text' => 'We process your messages to provide assistance. Your data will be handled according to our privacy policy.',
+    'consent_button' => 'I Consent',
+    'decline_button' => 'No Thanks',
+    'declined_message' => 'You have declined consent. Chat functionality is disabled.',
+    'chat_disabled' => 'Chat is disabled without consent',
+    'reconsider_consent' => 'Reconsider consent',
+];
+```
+
+The GDPR feature itself is still enabled/disabled via the config file:
+
+```php
 'gdpr' => [
     'enabled' => env('AGENTIC_CHAT_GDPR_ENABLED', false),
-    'consent_text' => 'We use AI to process your messages. Your data will be sent to our AI provider. Do you agree?',
-    'consent_button_text' => 'Accept',
-    'decline_button_text' => 'Decline',
-    'declined_message' => 'Chat requires consent. You can reconsider at any time.',
 ],
 ```
 
