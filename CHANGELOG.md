@@ -9,8 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### What's Changed
 
-* fix: switch strings to use translations instead of config by @kauffinger in https://github.com/kauffinger/agentic-chat-bubble/pull/4
-* chore(deps): bump actions/checkout from 4 to 5 by @dependabot[bot] in https://github.com/kauffinger/agentic-chat-bubble/pull/3
+- fix: switch strings to use translations instead of config by @kauffinger in https://github.com/kauffinger/agentic-chat-bubble/pull/4
+- chore(deps): bump actions/checkout from 4 to 5 by @dependabot[bot] in https://github.com/kauffinger/agentic-chat-bubble/pull/3
 
 **Full Changelog**: https://github.com/kauffinger/agentic-chat-bubble/compare/v0.2.0...v0.3.0
 
