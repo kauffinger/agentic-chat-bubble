@@ -5,20 +5,29 @@ All notable changes to the Agentic Chat Bubble addon will be documented in this 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [0.2.0] - 2025-08-10
+## [v0.3.0](https://github.com/kauffinger/agentic-chat-bubble/compare/v0.2.0...v0.3.0) - 2025-09-08
+
+### What's Changed
+
+* fix: switch strings to use translations instead of config by @kauffinger in https://github.com/kauffinger/agentic-chat-bubble/pull/4
+* chore(deps): bump actions/checkout from 4 to 5 by @dependabot[bot] in https://github.com/kauffinger/agentic-chat-bubble/pull/3
+
+**Full Changelog**: https://github.com/kauffinger/agentic-chat-bubble/compare/v0.2.0...v0.3.0
+
+## [0.2.0](https://github.com/kauffinger/agentic-chat-bubble/compare/v0.1.1...v0.2.0) - 2025-08-10
 
 ### Added
 
 - GDPR mode for privacy compliance
 - Configurable empty state for better customization
 
-## [0.1.1] - 2025-08-10
+## [0.1.1](https://github.com/kauffinger/agentic-chat-bubble/compare/v0.1.0...v0.1.1) - 2025-08-10
 
 ### Changed
 
 - Build process updates
 
-## [0.1.0] - 2025-08-10
+## [0.1.0](https://github.com/kauffinger/agentic-chat-bubble/compare/v0.0.1...v0.1.0) - 2025-08-10
 
 ### Added
 
@@ -40,7 +49,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Updated orchestra/testbench requirement
 
-## [0.0.1] - 2025-07-22
+## [0.0.1](https://github.com/kauffinger/agentic-chat-bubble/releases/tag/v0.0.1) - 2025-07-22
 
 ### Added
 
@@ -49,8 +58,3 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Alpine.js collapse component for UI interactions
 - Tailwind CSS for styling
 - Markdown and code highlighting support
-
-[0.2.0]: https://github.com/kauffinger/agentic-chat-bubble/compare/v0.1.1...v0.2.0
-[0.1.1]: https://github.com/kauffinger/agentic-chat-bubble/compare/v0.1.0...v0.1.1
-[0.1.0]: https://github.com/kauffinger/agentic-chat-bubble/compare/v0.0.1...v0.1.0
-[0.0.1]: https://github.com/kauffinger/agentic-chat-bubble/releases/tag/v0.0.1
