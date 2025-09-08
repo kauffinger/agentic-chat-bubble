@@ -44,13 +44,10 @@ class ChatBubbleComponent extends Component
     {
         $this->validate();
 
-        // Check GDPR consent if enabled
         if (Config::get('agentic-chat-bubble.gdpr.enabled', false) && ! $this->hasGdprConsent) {
-            // Client-side will handle showing the modal
             return;
         }
 
-        // Check rate limiting if enabled
         if (Config::get('agentic-chat-bubble.rate_limit.enabled', true)) {
             $key = $this->getRateLimitKey();
             $maxAttempts = Config::get('agentic-chat-bubble.rate_limit.max_messages', 30);
@@ -80,12 +77,10 @@ class ChatBubbleComponent extends Component
             return;
         }
 
-        // Check GDPR consent if enabled
         if (Config::get('agentic-chat-bubble.gdpr.enabled', false) && ! $this->hasGdprConsent) {
             return;
         }
 
-        // Check rate limiting if enabled
         if (Config::get('agentic-chat-bubble.rate_limit.enabled', true)) {
             $key = $this->getRateLimitKey();
             $maxAttempts = Config::get('agentic-chat-bubble.rate_limit.max_messages', 30);
@@ -94,7 +89,6 @@ class ChatBubbleComponent extends Component
             if (RateLimiter::tooManyAttempts($key, $maxAttempts)) {
                 $seconds = RateLimiter::availableIn($key);
 
-                // Fake an assistant error message
                 $this->messages[] = [
                     'id' => uniqid(),
                     'parts' => ['text' => "⚠️ Rate limit exceeded. Please wait {$seconds} seconds before sending another message."],
@@ -105,7 +99,6 @@ class ChatBubbleComponent extends Component
                 return;
             }
 
-            // Record the attempt
             RateLimiter::hit($key, $decayMinutes * 60);
         }
 
