@@ -26,13 +26,13 @@
         >
             {{-- Chat Header --}}
             <div class="flex items-center justify-between border-b-2 border-neutral-800 p-4">
-                <h3 class="text-lg font-bold">{{ config('agentic-chat-bubble.ui.title', 'Assistant') }}</h3>
+                <h3 class="text-lg font-bold">{{ __('agentic-chat-bubble::chat-bubble.title') }}</h3>
                 <div class="flex items-center gap-2">
                     <button
                         wire:click="resetChat"
-                        wire:confirm="Are you sure you want to clear the chat history?"
+                        wire:confirm="{{ __('agentic-chat-bubble::chat-bubble.reset_confirm') }}"
                         class="flex h-8 w-8 items-center justify-center transition-colors hover:bg-neutral-800 hover:text-white"
-                        aria-label="Reset chat"
+                        aria-label="{{ __('agentic-chat-bubble::chat-bubble.reset_chat') }}"
                     >
                         <svg
                             xmlns="http://www.w3.org/2000/svg"
@@ -52,7 +52,7 @@
                     <button
                         @click="open = false"
                         class="flex h-8 w-8 items-center justify-center transition-colors hover:bg-neutral-800 hover:text-white"
-                        aria-label="Close chat"
+                        aria-label="{{ __('agentic-chat-bubble::chat-bubble.close_chat') }}"
                     >
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
                             <path
@@ -81,9 +81,11 @@
                         style="display: none"
                     >
                         <div class="max-w-sm border-2 border-neutral-800 bg-white p-6">
-                            <h4 class="mb-4 text-lg font-bold">Privacy Notice</h4>
+                            <h4 class="mb-4 text-lg font-bold">
+                                {{ __('agentic-chat-bubble::chat-bubble.privacy_notice') }}
+                            </h4>
                             <p class="mb-6 text-sm">
-                                {{ config('agentic-chat-bubble.gdpr.consent_text') }}
+                                {{ __('agentic-chat-bubble::chat-bubble.consent_text') }}
                             </p>
                             <div class="flex gap-2">
                                 <button
@@ -91,14 +93,14 @@
                                     @click="showGdprConsent = false"
                                     class="flex-1 bg-neutral-900 px-4 py-2 font-bold text-white transition-colors hover:bg-neutral-700"
                                 >
-                                    {{ config('agentic-chat-bubble.gdpr.consent_button_text', 'I Consent') }}
+                                    {{ __('agentic-chat-bubble::chat-bubble.consent_button') }}
                                 </button>
                                 <button
                                     wire:click="declineGdprConsent"
                                     @click="showGdprConsent = false"
                                     class="flex-1 border-2 border-neutral-800 bg-white px-4 py-2 font-bold transition-colors hover:bg-neutral-100"
                                 >
-                                    {{ config('agentic-chat-bubble.gdpr.decline_button_text', 'No Thanks') }}
+                                    {{ __('agentic-chat-bubble::chat-bubble.decline_button') }}
                                 </button>
                             </div>
                         </div>
@@ -109,12 +111,12 @@
                 @if (config('agentic-chat-bubble.gdpr.enabled') && $hasDeclinedGdpr)
                     <div class="mt-8 p-4 text-center">
                         <p class="text-sm text-gray-600">
-                            {{ config('agentic-chat-bubble.gdpr.declined_message') }}
+                            {{ __('agentic-chat-bubble::chat-bubble.declined_message') }}
                         </p>
                     </div>
                 @elseif (empty($messages))
                     <p class="mt-8 text-center text-gray-500">
-                        {{ config('agentic-chat-bubble.ui.empty_state_text', 'Start a conversation...') }}
+                        {{ __('agentic-chat-bubble::chat-bubble.empty_state') }}
                     </p>
                 @else
                     <div class="space-y-4">
@@ -156,12 +158,14 @@
                 @if (config('agentic-chat-bubble.gdpr.enabled') && $hasDeclinedGdpr)
                     {{-- Show disabled state when consent is declined --}}
                     <div class="text-center">
-                        <p class="mb-2 text-sm text-gray-500">Chat is disabled without consent</p>
+                        <p class="mb-2 text-sm text-gray-500">
+                            {{ __('agentic-chat-bubble::chat-bubble.chat_disabled') }}
+                        </p>
                         <button
                             @click="showGdprConsent = true"
                             class="text-sm text-neutral-900 underline hover:no-underline"
                         >
-                            Reconsider consent
+                            {{ __('agentic-chat-bubble::chat-bubble.reconsider_consent') }}
                         </button>
                     </div>
                 @else
@@ -185,14 +189,14 @@
                             <input
                                 wire:model.blur="message"
                                 type="text"
-                                placeholder="{{ config('agentic-chat-bubble.ui.placeholder', 'Type your message...') }}"
+                                placeholder="{{ __('agentic-chat-bubble::chat-bubble.placeholder') }}"
                                 class="{{ $errors->has('message') ? 'border-red-600' : 'border-neutral-800' }} {{ $errors->has('message') ? 'focus:ring-red-600' : 'focus:ring-neutral-800' }} flex-1 border-2 px-3 py-2 focus:ring-2 focus:ring-offset-2 focus:outline-none"
                             />
                             <button
                                 type="submit"
                                 class="bg-neutral-900 px-4 py-2 font-bold text-white transition-colors hover:bg-neutral-700"
                             >
-                                Send
+                                {{ __('agentic-chat-bubble::chat-bubble.send') }}
                             </button>
                         </div>
                     </form>
@@ -204,7 +208,7 @@
         <button
             @click="open = !open"
             class="flex h-14 w-14 items-center justify-center bg-neutral-900 text-white shadow-lg transition-colors hover:bg-neutral-700"
-            aria-label="Open chat"
+            aria-label="{{ __('agentic-chat-bubble::chat-bubble.open_chat') }}"
         >
             <svg
                 x-show="!open"
