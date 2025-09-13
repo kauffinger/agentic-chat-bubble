@@ -7,7 +7,15 @@
             showGdprConsent: false,
         }"
         @resize.window="isMobile = window.innerWidth <= 640"
-        class="fixed bottom-6 left-6 z-50"
+        @php
+            $positionClasses = match(config('agentic-chat-bubble.ui.position')) {
+                            'bottom-right' => 'fixed right-6 bottom-6 z-50',
+                            'top-right' => 'fixed top-6 right-6 z-50',
+                            'top-left' => 'fixed top-6 left-6 z-50',
+                            default => 'fixed bottom-6 left-6 z-50',
+                        };
+        @endphp
+        class="{{ $positionClasses }}"
     >
         {{-- Floating Chat Window --}}
         <div
@@ -21,7 +29,15 @@
             x-transition:leave-end="scale-95 opacity-0"
             @click.outside="!isMobile && (open = false)"
             @keydown.escape="open = false"
-            class="fixed inset-0 h-full w-full border-2 border-neutral-800 bg-white sm:absolute sm:inset-auto sm:bottom-20 sm:left-0 sm:h-[500px] sm:w-[380px] sm:border-2 sm:shadow-lg"
+            @php
+                $windowClasses = match(config('agentic-chat-bubble.ui.position')) {
+                                    'bottom-right' => 'fixed inset-0 h-full w-full border-2 border-neutral-800 bg-white sm:absolute sm:inset-auto sm:right-0 sm:bottom-20 sm:h-[500px] sm:w-[380px] sm:border-2 sm:shadow-lg',
+                                    'top-right' => 'fixed inset-0 h-full w-full border-2 border-neutral-800 bg-white sm:absolute sm:inset-auto sm:top-20 sm:right-0 sm:h-[500px] sm:w-[380px] sm:border-2 sm:shadow-lg',
+                                    'top-left' => 'fixed inset-0 h-full w-full border-2 border-neutral-800 bg-white sm:absolute sm:inset-auto sm:top-20 sm:left-0 sm:h-[500px] sm:w-[380px] sm:border-2 sm:shadow-lg',
+                                    default => 'fixed inset-0 h-full w-full border-2 border-neutral-800 bg-white sm:absolute sm:inset-auto sm:bottom-20 sm:left-0 sm:h-[500px] sm:w-[380px] sm:border-2 sm:shadow-lg',
+                                };
+            @endphp
+            class="{{ $windowClasses }}"
             style="display: none"
         >
             {{-- Chat Header --}}
