@@ -168,9 +168,7 @@ describe('Rate Limiting', function () {
             ->andReturn(false);
         RateLimiter::shouldReceive('hit')
             ->once()
-            ->withArgs(function ($key, $seconds) {
-                return str_starts_with($key, 'agentic-chat-bubble:') && $seconds === 120;
-            });
+            ->withArgs(fn ($key, $seconds) => str_starts_with($key, 'agentic-chat-bubble:') && $seconds === 120);
 
         $fakeResponse = TextResponseFake::make()
             ->withText('Response')
@@ -274,7 +272,6 @@ describe('Provider Configuration', function () {
 
         $component = livewire(ChatBubbleComponent::class)->instance();
         $reflection = new ReflectionMethod($component, 'getProvider');
-        $reflection->setAccessible(true);
 
         expect($reflection->invoke($component))->toBe(Provider::OpenAI);
     });
@@ -284,7 +281,6 @@ describe('Provider Configuration', function () {
 
         $component = livewire(ChatBubbleComponent::class)->instance();
         $reflection = new ReflectionMethod($component, 'getProvider');
-        $reflection->setAccessible(true);
 
         expect($reflection->invoke($component))->toBe(Provider::Anthropic);
     });
@@ -294,7 +290,6 @@ describe('Provider Configuration', function () {
 
         $component = livewire(ChatBubbleComponent::class)->instance();
         $reflection = new ReflectionMethod($component, 'getProvider');
-        $reflection->setAccessible(true);
 
         expect($reflection->invoke($component))->toBe(Provider::Gemini);
 
@@ -302,7 +297,6 @@ describe('Provider Configuration', function () {
 
         $component = livewire(ChatBubbleComponent::class)->instance();
         $reflection = new ReflectionMethod($component, 'getProvider');
-        $reflection->setAccessible(true);
 
         expect($reflection->invoke($component))->toBe(Provider::Gemini);
     });
@@ -312,7 +306,6 @@ describe('Provider Configuration', function () {
 
         $component = livewire(ChatBubbleComponent::class)->instance();
         $reflection = new ReflectionMethod($component, 'getProvider');
-        $reflection->setAccessible(true);
 
         expect($reflection->invoke($component))->toBe(Provider::Ollama);
     });
@@ -322,7 +315,6 @@ describe('Provider Configuration', function () {
 
         $component = livewire(ChatBubbleComponent::class)->instance();
         $reflection = new ReflectionMethod($component, 'getProvider');
-        $reflection->setAccessible(true);
 
         expect($reflection->invoke($component))->toBe(Provider::OpenAI);
     });
@@ -336,7 +328,6 @@ describe('Message Conversion', function () {
 
         $component = livewire(ChatBubbleComponent::class)->instance();
         $reflection = new ReflectionMethod($component, 'messagesToPrism');
-        $reflection->setAccessible(true);
 
         $prismMessages = $reflection->invoke($component, $messages);
 
@@ -352,7 +343,6 @@ describe('Message Conversion', function () {
 
         $component = livewire(ChatBubbleComponent::class)->instance();
         $reflection = new ReflectionMethod($component, 'messagesToPrism');
-        $reflection->setAccessible(true);
 
         $prismMessages = $reflection->invoke($component, $messages);
 
@@ -372,7 +362,6 @@ describe('Message Conversion', function () {
 
         $component = livewire(ChatBubbleComponent::class)->instance();
         $reflection = new ReflectionMethod($component, 'messagesToPrism');
-        $reflection->setAccessible(true);
 
         $prismMessages = $reflection->invoke($component, $messages);
 
@@ -387,7 +376,6 @@ describe('Message Conversion', function () {
 
         $component = livewire(ChatBubbleComponent::class)->instance();
         $reflection = new ReflectionMethod($component, 'messagesToPrism');
-        $reflection->setAccessible(true);
 
         expect(fn () => $reflection->invoke($component, $messages))
             ->toThrow(\InvalidArgumentException::class, 'Unknown message role: unknown');
@@ -445,7 +433,6 @@ describe('Rate Limit Key Generation', function () {
     it('generates rate limit key with session id', function () {
         $component = livewire(ChatBubbleComponent::class)->instance();
         $reflection = new ReflectionMethod($component, 'getRateLimitKey');
-        $reflection->setAccessible(true);
 
         $key = $reflection->invoke($component);
 
@@ -599,11 +586,11 @@ describe('UpdateStreamDataFromPrismChunk Action', function () {
         $action = new UpdateStreamDataFromPrismChunk;
 
         $chunk = new Chunk(
-            chunkType: ChunkType::Text,
             text: 'Hello world',
             toolCalls: [],
             toolResults: [],
-            meta: null
+            meta: null,
+            chunkType: ChunkType::Text
         );
 
         $action->handle($streamData, $chunk);
@@ -622,11 +609,11 @@ describe('UpdateStreamDataFromPrismChunk Action', function () {
         );
 
         $chunk = new Chunk(
-            chunkType: ChunkType::ToolCall,
             text: '',
             toolCalls: [$toolCall],
             toolResults: [],
-            meta: null
+            meta: null,
+            chunkType: ChunkType::ToolCall
         );
 
         $action->handle($streamData, $chunk);
@@ -648,11 +635,11 @@ describe('UpdateStreamDataFromPrismChunk Action', function () {
         );
 
         $chunk = new Chunk(
-            chunkType: ChunkType::ToolResult,
             text: '',
             toolCalls: [],
             toolResults: [$toolResult],
-            meta: null
+            meta: null,
+            chunkType: ChunkType::ToolResult
         );
 
         $action->handle($streamData, $chunk);

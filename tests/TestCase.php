@@ -10,6 +10,7 @@ abstract class TestCase extends AddonTestCase
 {
     protected string $addonServiceProvider = ServiceProvider::class;
 
+    #[\Override]
     protected function getPackageProviders($app)
     {
         return array_merge(parent::getPackageProviders($app), [

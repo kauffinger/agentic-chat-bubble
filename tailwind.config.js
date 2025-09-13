@@ -1,3 +1,3 @@
 module.exports = {
-    content: ['./resources/views/**/*.blade.php'],
+    content: ['./resources/views/**/*.blade.php', './src/Helpers/PositionHelper.php'],
 };

@@ -64,20 +64,19 @@ class ToolRegistry
         if (is_string($tool)) {
             // Class string - resolve from container
             return app($tool);
-        } elseif (is_callable($tool)) {
+        }
+        if (is_callable($tool)) {
             // Closure or callable - invoke it
             $resolvedTool = $tool();
-            if (! $resolvedTool instanceof Tool) {
-                throw new InvalidArgumentException('Callable must return a Tool instance');
-            }
+            throw_unless($resolvedTool instanceof Tool, InvalidArgumentException::class, 'Callable must return a Tool instance');
 
             return $resolvedTool;
-        } elseif ($tool instanceof Tool) {
+        }
+        if ($tool instanceof Tool) {
             // Already instantiated
             return $tool;
-        } else {
-            throw new InvalidArgumentException('Tool must be a string, callable, or Tool instance');
         }
+        throw new InvalidArgumentException('Tool must be a string, callable, or Tool instance');
     }
 
     /**

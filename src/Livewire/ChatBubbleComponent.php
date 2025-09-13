@@ -73,7 +73,7 @@ class ChatBubbleComponent extends Component
 
     public function runChatToolLoop(UpdateStreamDataFromPrismChunk $updateStreamDataFromPrismChunk): void
     {
-        if (empty($this->messages)) {
+        if ($this->messages === []) {
             return;
         }
 
@@ -150,13 +150,11 @@ class ChatBubbleComponent extends Component
 
     private function messagesToPrism(array $messages): array
     {
-        return collect($messages)->map(function ($message) {
-            return match ($message['role']) {
-                'user' => new UserMessage($message['parts']['text'] ?? ''),
-                'assistant' => new AssistantMessage($message['parts']['text'] ?? '', $message['parts']['tool_calls'] ?? []),
-                'tool_result' => new ToolResultMessage($message['parts']['tool_results'] ?? []),
-                default => throw new \InvalidArgumentException('Unknown message role: '.$message['role']),
-            };
+        return collect($messages)->map(fn ($message) => match ($message['role']) {
+            'user' => new UserMessage($message['parts']['text'] ?? ''),
+            'assistant' => new AssistantMessage($message['parts']['text'] ?? '', $message['parts']['tool_calls'] ?? []),
+            'tool_result' => new ToolResultMessage($message['parts']['tool_results'] ?? []),
+            default => throw new \InvalidArgumentException('Unknown message role: '.$message['role']),
         })->all();
     }
 
@@ -188,7 +186,7 @@ class ChatBubbleComponent extends Component
     {
         $providerString = Config::get('agentic-chat-bubble.provider', 'openai');
 
-        return match (strtolower($providerString)) {
+        return match (strtolower((string) $providerString)) {
             'openai' => Provider::OpenAI,
             'anthropic' => Provider::Anthropic,
             'google', 'gemini' => Provider::Gemini,

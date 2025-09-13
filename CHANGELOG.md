@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### What's Changed
 
-* fix: drop config keys by @kauffinger in https://github.com/kauffinger/agentic-chat-bubble/pull/5
+- fix: drop config keys by @kauffinger in https://github.com/kauffinger/agentic-chat-bubble/pull/5
 
 **Full Changelog**: https://github.com/kauffinger/agentic-chat-bubble/compare/v0.3.0...v0.3.1
 

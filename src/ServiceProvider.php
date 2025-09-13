@@ -19,6 +19,7 @@ class ServiceProvider extends AddonServiceProvider
         'publicDirectory' => 'resources/dist',
     ];
 
+    #[\Override]
     public function bootAddon()
     {
         Livewire::component('agentic-chat-bubble', ChatBubbleComponent::class);

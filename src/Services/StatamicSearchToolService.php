@@ -8,8 +8,6 @@ use Statamic\Facades\Search;
 
 class StatamicSearchToolService
 {
-    public function __construct() {}
-
     public function getAvailableIndexes()
     {
         return Search::indexes();
