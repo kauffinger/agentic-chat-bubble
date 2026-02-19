@@ -135,6 +135,7 @@
                             </div>
 
                             @foreach (array_reverse($messages) as $msg)
+                                @continue(empty($msg['role']))
                                 @if ($msg['role'] === 'user')
                                     <div class="flex justify-end">
                                         <div
